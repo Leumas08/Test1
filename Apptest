@@ -1,0 +1,67 @@
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    options = ['Option 1', 'Option 2', 'Option 3']  # List of options for the dropdown menu
+    return render_template('index.html', options=options)
+
+@app.route('/process', methods=['POST'])
+def process():
+    text = request.form['text']
+    selected_option = request.form['option']
+    
+    if 'enter_button' in request.form:
+        # Process when the Enter button is clicked
+        number = len(text)  # Example: Calculate the length of the input text
+        return render_template('result.html', number=number)
+    else:
+        # Process when the Enter key is pressed in the text box
+        return ''
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+index.html
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text Input Flask App</title>
+    <style>
+        #result {
+            width: 300px;
+            height: 100px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Enter Text:</h1>
+    <form action="/process" method="post">
+        <input type="text" name="text" placeholder="Enter your text" required onkeydown="handleKeyDown(event)">
+        
+        <select name="option">
+            {% for option in options %}
+            <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
+        </select>
+        
+        <input type="submit" name="enter_button" value="Enter">
+    </form>
+    
+    <textarea id="result" readonly></textarea>
+    
+    <script>
+        function handleKeyDown(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                document.getElementsByName('enter_button')[0].click();
+            }
+        }
+    </script>
+</body>
+</html>
